@@ -1,37 +1,8 @@
-// import React from "react";
-// import {render} from "react-dom";
-
-// import { User } from './components/User';
-// import { Main } from './components/Main';
-
-// class App extends React.Component {
-//     constructor() {
-//         super();
-//         this.state = {
-//             username: "Max"
-//         };
-//     }
-
-//     changeUsername(newName) {
-//         this.setState({
-//             username: newName
-//         });
-//     }
-
-//     render() {
-//         return (
-//             <div className="container">
-//                 <Main changeUsername={this.changeUsername.bind(this)}/>
-//                 <User username={this.state.username}/>
-//             </div>
-//         );
-//     }
-// }
-
-// render(<App />, window.document.getElementById('app'));
-
-import { createStore, combineReducers, applyMiddleware } from "redux";
-import logger from "redux-logger";
+import React from "react";
+import { render } from "react-dom";
+import { createStore, combineReducers } from "redux";
+import App from "./components/App";
+import { Provider } from "react-redux";
 
 const mathReducer = (state = {
     result: 1,
@@ -77,30 +48,28 @@ const userReducer = (state = {
     return state;
 };
 
-const myLogger = (store) => (next) => (action) => {
-    console.log("Logged action: ", action);
-    next(action);
-}
+
 
 const store = createStore(
-    combineReducers({ mathReducer: mathReducer, userReducer: userReducer }), {},
-    applyMiddleware(myLogger, logger()));
+    combineReducers({ mathReducer: mathReducer, userReducer: userReducer }), {});
+
+const store2 = createStore(userReducer);
 
 store.subscribe(() => {
     console.log("Store updated !", store.getState());
 });
 
-store.dispatch({
-    type: "ADD",
-    payload: 10
+store2.subscribe(() => {
+    console.log("Store updated !", store2.getState());
 });
 
-store.dispatch({
-    type: "SUBTRACT",
-    payload: 80
+store2.dispatch({
+    type:"SET_NAME",
+    payload:"Son2"
 });
 
-store.dispatch({
-    type: "SET_AGE",
-    payload: 30
-});
+render(
+    <Provider store={store}>
+        < App />
+    </Provider>
+    , window.document.getElementById('app'));
